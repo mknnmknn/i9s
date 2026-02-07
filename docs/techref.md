@@ -1,33 +1,6 @@
-# i9s Technical Reference
-**Version:** 2.1  
-**Last Updated:** February 8, 2026  
-**Database:** dmlco_wp471  
-**Table Prefix:** wpsk_  
+i9s Technical Reference
 
----
-
-## 📋 Document Changelog
-
-### v2.1 (Feb 8, 2026)
-- Added comprehensive Roadmap section with 7 planned tasks
-- Updated i9s_level taxonomy documentation
-- Noted PlayerID fix completed for 3 players (Feb 8, 2026)
-- Clarified that `pyr` field was NOT updated in yearly records (pending schema review)
-- Added note about future i9s_level values (Draft/Final/Curated)
-
-### v2.0 (Feb 7, 2026)
-- Added complete database configuration (credentials, prefix, charset)
-- Added actual table structures from phpMyAdmin
-- Added Code Snippets documentation
-- Added page implementations (Alphabetical, Chronological, Recent Updates)
-- Corrected table prefix from wp_ to wpsk_
-- Added storage architecture explanation
-
-### v1.0 (Feb 7, 2026)
-- Initial version from Pods export
-- Basic schema and field documentation
-
----
+Version Control and history information removed and moved to GitHub.
 
 ## 🎯 Quick Reference Cards
 
@@ -79,10 +52,9 @@ Pitching: pid, yr, g, gs, ip, ha, w, k, hra, era, whip
 5. [Code Snippets](#code-snippets)
 6. [Pods Templates](#pods-templates)
 7. [Common Operations](#common-operations)
-8. [Roadmap](#roadmap)
-9. [Known Issues & Fixes](#known-issues--fixes)
-10. [Development Guidelines](#development-guidelines)
-11. [Plugin Versions](#plugin-versions)
+8. [Known Issues & Fixes](#known-issues--fixes)
+9. [Development Guidelines](#development-guidelines)
+10. [Plugin Versions](#plugin-versions)
 
 ---
 
@@ -867,45 +839,6 @@ try {
     error_log('Update failed: ' . $e->getMessage());
 }
 ```
-
----
-
-## Roadmap
-
-**Last Updated:** February 8, 2026
-
-For detailed task descriptions, requirements, and implementation notes, see the separate **[i9s-roadmap.md](./i9s-roadmap.md)** document.
-
-### Phase Summary
-
-| Phase | Focus | Tasks | Est. Time |
-|-------|-------|-------|-----------|
-| Phase 1 | Foundation | D, A | 4-6 hours |
-| Phase 2 | Data Structure | B, C | 5-7 hours |
-| Phase 3 | User Experience | E, F | 1.5-3 hours |
-| Phase 4 | Workflow | G | 4-5 hours |
-| **Total** | | **7 tasks** | **14.5-21 hours** |
-
-### Quick Task Overview
-
-**Phase 1: Foundation**
-- **Task D:** Schema Review & Optimization (fix `pyr` redundancy, update PlayerID tool)
-- **Task A:** Master Player List Page (admin page with all players, sortable, searchable)
-
-**Phase 2: Data Structure**
-- **Task B:** Convert Stats to Formulas (calculate BA/OBP/ERA on display, not storage)
-- **Task C:** Career Totals (add career summary and TOTALS rows to player pages)
-
-**Phase 3: User Experience**
-- **Task E:** Search Function Links (make search results clickable)
-- **Task F:** By Position Page (group players by primary position with tabs)
-
-**Phase 4: Workflow**
-- **Task G:** Data Input Tools (paste from Google Sheet, auto-validate, batch import)
-
-**Current Status:** Planning phase - ready to begin Task D
-
----
 
 ## Known Issues & Fixes
 
