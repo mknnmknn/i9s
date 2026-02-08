@@ -233,7 +233,7 @@ Example:       https://i9s.org/wp/?player=oms-000ale
 - **Type:** Pod (Advanced Content Type)
 - **Storage:** Table (wpsk_pods_playeryear_b)
 - **Pod ID:** 70
-- **Index Field:** pyr
+- **Index Field:** pyr_auto
 
 #### Database Table Structure
 
@@ -242,9 +242,9 @@ Example:       https://i9s.org/wp/?player=oms-000ale
 | Column | Type | Null | Key | Description |
 |--------|------|------|-----|-------------|
 | `id` | bigint | No | PRI | Auto-increment primary key |
-| `pyr` | varchar | Yes | | PlayerYear composite key (e.g., oms-000ale1925) |
-| `pid` | varchar | Yes | | **Foreign key to Player.pid** |
-| `yr` | decimal | Yes | | Season year |
+| `pyr_auto` | varchar(25) | Yes | | Auto-generated display label (e.g., oms-000ale (1925)) |
+| `pid` | varchar | Yes | MUL | **Foreign key to Player.pid** |
+| `yr` | decimal | Yes | MUL | Season year |
 | `ab` | decimal | Yes | | At Bats |
 | `h` | decimal | Yes | | Hits |
 | `2b` | decimal | Yes | | Doubles |
@@ -263,7 +263,13 @@ Example:       https://i9s.org/wp/?player=oms-000ale
 
 **Indexes:**
 - PRIMARY KEY: `id`
-- Index recommended on: `pid`, `yr` (for performance)
+- UNIQUE INDEX: `idx_pid_yr (pid, yr)` - Enforces one record per player per year
+
+**Note on pyr_auto:**  
+This field is automatically generated via PHP hook when records are saved.  
+Format: `{pid} ({yr})`  
+Example: `oms-000ale (1925)`  
+Never manually set this field - it will be overwritten on save.
 
 **Relationships:**
 - Text-based join to `Player.pid` (not a Pods relationship object)
@@ -281,7 +287,7 @@ Example:       https://i9s.org/wp/?player=oms-000ale
 - **Type:** Pod (Advanced Content Type)
 - **Storage:** Table (wpsk_pods_playeryear_p)
 - **Pod ID:** 2063
-- **Index Field:** pyr
+- **Index Field:** pyr_auto
 
 #### Database Table Structure
 
@@ -290,9 +296,9 @@ Example:       https://i9s.org/wp/?player=oms-000ale
 | Column | Type | Null | Key | Description |
 |--------|------|------|-----|-------------|
 | `id` | bigint | No | PRI | Auto-increment primary key |
-| `pyr` | varchar | Yes | | PlayerYear composite key |
-| `pid` | varchar | Yes | | **Foreign key to Player.pid** |
-| `yr` | decimal | Yes | | Season year |
+| `pyr_auto` | varchar(25) | Yes | | Auto-generated display label (e.g., ball-000wal (1893)) |
+| `pid` | varchar | Yes | MUL | **Foreign key to Player.pid** |
+| `yr` | decimal | Yes | MUL | Season year |
 | `g` | decimal | Yes | | Games Pitched |
 | `gs` | decimal | Yes | | Games Started |
 | `ip` | decimal(7,1) | Yes | | Innings Pitched |
@@ -315,7 +321,13 @@ Example:       https://i9s.org/wp/?player=oms-000ale
 
 **Indexes:**
 - PRIMARY KEY: `id`
-- Index recommended on: `pid`, `yr` (for performance)
+- UNIQUE INDEX: `idx_pid_yr (pid, yr)` - Enforces one record per player per year
+
+**Note on pyr_auto:**  
+This field is automatically generated via PHP hook when records are saved.  
+Format: `{pid} ({yr})`  
+Example: `ball-000wal (1893)`  
+Never manually set this field - it will be overwritten on save.
 
 **Relationships:**
 - Text-based join to `Player.pid` (not a Pods relationship object)
@@ -840,13 +852,55 @@ try {
 }
 ```
 
+### Auto-Generated Fields
+
+#### pyr_auto Field Behavior
+
+The `pyr_auto` field in PlayerYear tables is automatically generated via PHP hook.
+
+**You should NEVER manually set this field:**
+```php
+// WRONG - Don't do this!
+$batting = pods('playeryear_b');
+$batting->save(array(
+    'pid' => 'oms-000ale',
+    'yr' => 1925,
+    'pyr_auto' => 'manually set',  // ❌ This will be overwritten!
+    'ab' => 450
+));
+
+// RIGHT - Just save pid and yr, pyr_auto generates automatically
+$batting = pods('playeryear_b');
+$batting->save(array(
+    'pid' => 'oms-000ale',
+    'yr' => 1925,
+    'ab' => 450
+    // pyr_auto will auto-populate as "oms-000ale (1925)"
+));
+```
+
+**How it works:**
+1. You save a PlayerYear record with `pid` and `yr`
+2. Pods saves the record
+3. PHP hook fires automatically
+4. Hook generates `pyr_auto` = `{pid} ({yr})`
+5. Record is updated silently in background
+
+**Format:** `{pid} ({yr})`  
+**Examples:**
+- `oms-000ale (1925)`
+- `ball-000wal (1893)`
+- `rogan-001bul (1920)`
+
+**Implementation:** See i9s Database Tools plugin v1.0.9
+
 ## Known Issues & Fixes
 
 **Last Verified:** February 7, 2026
 
 ### Issue #1: PlayerIDs with Multiple Consecutive Dashes
 
-**Status:** ⚠️ ACTIVE - 3 players affected
+**Status:** ✅ RESOLVED (February 8, 2026)
 
 **Problem:**  
 PlayerIDs containing multiple consecutive dashes cause Pods template errors:
@@ -856,26 +910,6 @@ Pods Embed Error: WHERE contains SQL that is not allowed.
 
 **Root Cause:**  
 Pods security interprets `--` as SQL comment syntax and blocks WHERE clauses containing it.
-
-**Players Affected:**
-- Alejandro Oms: `oms---000ale` (triple dash) - 19 batting, 0 pitching records
-- Pete Hill: `hill--001pet` (double dash) - 20 batting, 0 pitching records
-- Walter Ball: `ball--000wal` (double dash) - 0 batting, 12 pitching records
-
-**Impact:**
-- Player pages display template error instead of year-by-year stats
-- Stats exist in database but can't be displayed via templates
-
-**Solution:**  
-Fix PlayerIDs to use single dashes:
-- `oms---000ale` → `oms-000ale`
-- `hill--001pet` → `hill-001pet`
-- `ball--000wal` → `ball-000wal`
-
-**Update Required in 3 Locations:**
-1. Player CPT: `wpsk_postmeta` WHERE `meta_key = 'pid'`
-2. Batting records: `wpsk_pods_playeryear_b.pid`
-3. Pitching records: `wpsk_pods_playeryear_p.pid`
 
 **Tool:** i9s Database Tools plugin v1.0.8+
 
@@ -889,59 +923,7 @@ Fix PlayerIDs to use single dashes:
 
 ---
 
-### Issue #2: Pods Query Default Limit
-
-**Status:** ⚠️ CAUTION - Common mistake
-
-**Problem:**  
-`$pods->find()` without parameters defaults to 15 results, not all records.
-
-**Impact:**
-- Queries return only first 15 players alphabetically
-- Loops appear to work but silently skip most data
-- Not obvious without checking totals
-
-**Solution:**  
-Always specify limit explicitly:
-```php
-// WRONG - only gets 15 players
-$players = pods('player');
-$players->find();
-
-// RIGHT - gets all players
-$players = pods('player');
-$players->find(array('limit' => -1));
-```
-
-**Best Practice:**  
-Always use `array('limit' => -1)` for unlimited results.
-
----
-
-### Issue #3: find() Must Come Before total()
-
-**Status:** ⚠️ CAUTION - Common mistake
-
-**Problem:**  
-Calling `$pods->total()` before `$pods->find()` returns NULL.
-
-**Example:**
-```php
-// WRONG - total() returns NULL
-$players = pods('player');
-if ($players->total() == 0) {  // This is NULL!
-    echo 'No players';
-}
-
-// RIGHT - call find() first
-$players = pods('player');
-$players->find(array('limit' => -1));
-$total = $players->total();  // Now returns actual count
-```
-
----
-
-### Issue #4: Published vs All Players
+### Issue #2: Published vs All Players
 
 **Status:** 📋 DOCUMENTED - Expected behavior
 
@@ -1022,6 +1004,30 @@ try {
     $wpdb->query('ROLLBACK');
 }
 ```
+#### Never Manually Set Auto-Generated Fields
+
+The `pyr_auto` field is managed by PHP hooks and should never be manually set:
+
+```php
+// ❌ WRONG
+$wpdb->update(
+    $wpdb->prefix . 'pods_playeryear_b',
+    array(
+        'pid' => 'new-id',
+        'pyr_auto' => 'manually-set-value'  // Don't do this!
+    ),
+    array('id' => $id)
+);
+
+// ✅ RIGHT - Hook will auto-update pyr_auto
+$wpdb->update(
+    $wpdb->prefix . 'pods_playeryear_b',
+    array('pid' => 'new-id'),  // pyr_auto updates automatically
+    array('id' => $id)
+);
+```
+
+**Why:** The hook regenerates `pyr_auto` on every save, so manual values will be overwritten.
 
 ---
 
@@ -1176,10 +1182,11 @@ if ($players === false) {
 **Active Snippets:** 3
 
 ### i9s Database Tools (Custom Plugin)
-**Current Version:** 1.0.8  
-**Purpose:** Database maintenance and PlayerID fixes
+**Current Version:** 1.0.9  
+**Purpose:** Database maintenance, PlayerID fixes, and auto-field generation
 
 **Changelog:**
+- **v1.0.9** - Added auto-generation of pyr_auto field for PlayerYear records (February 8, 2026)
 - **v1.0.8** - Fixed Pods query limit (added `limit => -1`), fixed field name consistency (`total_players`)
 - **v1.0.7** - Added debug display to issues view
 - **v1.0.6** - Removed sample limit
