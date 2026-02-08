@@ -13,7 +13,7 @@ This document outlines all planned enhancements and improvements. Tasks are orga
 
 | Phase | Focus | Tasks | Est. Time |
 |-------|-------|-------|-----------|
-| Phase 1 | Foundation | D, A | 4-6 hours |
+| Phase 1 | Foundation |~~D~~, A | 4-6 hours |
 | Phase 2 | Data Structure | B, C | 5-7 hours |
 | Phase 3 | User Experience | E, F | 1.5-3 hours |
 | Phase 4 | Workflow | G | 4-5 hours |
@@ -29,39 +29,7 @@ This document outlines all planned enhancements and improvements. Tasks are orga
 **Estimated Time:** 2-3 hours  
 **Dependencies:** None
 
-**Purpose:**  
-Review and optimize the database schema, particularly addressing redundancy in the PlayerYear tables and improving data entry workflow.
-
-**Primary Issues:**
-- `pyr` field contains manual concatenation of `pid.yr.b` or `pid.yr.p`
-- Redundant with existing `pid` and `yr` fields
-- Error-prone during manual data entry
-- Still contains old broken PlayerIDs with multiple dashes (not updated by PlayerID fix tool)
-
-**Requirements:**
-- Evaluate whether to keep, auto-generate, or remove `pyr` field
-- Consider converting text-based joins to true Pods relationships
-- Update PlayerID fix tool to handle `pyr` field if we keep it
-- Document final schema decisions
-- Migrate existing data if schema changes
-
-**Technical Considerations:**
-- `id` field already serves as primary key
-- `pid` + `yr` combination is unique within each table
-- Table storage ACTs don't require `pyr` for Pods functionality
-- Consider impact on existing queries and templates
-
-**Possible Outcomes:**
-1. Auto-generate `pyr` during data entry/import
-2. Remove `pyr` entirely, rely on `id` + `pid` + `yr`
-3. Keep as-is but add validation/auto-correction
-4. Convert to true Pods relationships (larger change)
-
-**Current State:**
-- `pyr` format: `pid.yr.b` or `pid.yr.p` (e.g., "oms-000ale.1925.b")
-- Used as Pods "index field" but not enforced as unique
-- Manual entry required
-- Contains outdated PlayerIDs with multiple dashes
+Complete 260207
 
 ---
 
