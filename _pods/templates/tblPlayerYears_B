@@ -1,0 +1,21 @@
+<!-- 260209 -->
+[before]<table><tr><td class="hdg">Year</td><td class="hdg">AB</td><td class="hdg">H</td><td class="hdg">2B</td><td class="hdg">3B</td><td class="hdg">HR</td><td class="hdg">BB</td><td class="hdg">SO</td><td class="hdg">SB</td><td class="hdg">CS</td><td class="hdg">BA</td><td class="hdg">OBP</td><td class="hdg">SLG</td><td class="hdg">OPS</td></tr>[/before]
+[if ab]
+<tr>
+    <td class="hdg">{@yr}</td>
+    <td>{@ab}</td>
+    <td>{@h}</td>
+    <td>{@2b}</td>
+    <td>{@3b}</td>
+    <td>{@hr}</td>
+    <td>{@bb}</td>
+    <td>{@so}</td>
+    <td>{@sb}</td>
+    <td>{@cs}</td>
+    <td>{:i9s_display_ba({@h},{@ab}):}</td>
+    <td>{:i9s_display_obp({@h},{@bb},{@ab}):}</td>
+    <td>{:i9s_display_slg({@h},{@2b},{@3b},{@hr},{@ab}):}</td>
+    <td>{:i9s_display_ops({@h},{@bb},{@ab},{@2b},{@3b},{@hr}):}</td>
+</tr>
+[/if]
+[after]</table>[/after]

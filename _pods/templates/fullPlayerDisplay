@@ -1,0 +1,13 @@
+<!-- 260209 -->
+[i9s_career_summary pid="{@pid}"]
+
+[pods name="player" slug="{@pid}"]{@playerintro}[/pods]
+
+[pods name="player" template="tblPlayerInfo" slug="{@pid}"]
+<p>&nbsp;</p>
+<h3>Batting Projections</h3>
+[i9s_batting_table pid="{@pid}"]
+<p>&nbsp;</p>
+<h3>Pitching Projections</h3>
+[i9s_pitching_table pid="{@pid}"]
+<!-- [pods name="playeryear_p" template="tblPlayerYears_P" where="pid = '{@pid}'" limit="-1"] -->

@@ -1,0 +1,10 @@
+<!-- 260209 -->
+[before]<table>[/before]
+<tr><td class="hdg">Name</td><td class="hdg">{@first_name} {@last_name}[if nickname] ({@nickname})[/if]</td></tr>
+<tr><td class="hdg">ID / Status</td><td>{@pid} / <a href="https://i9s.org/wp/?page_id=213">{@i9s_level}</a></td></tr>
+<tr><td class="hdg">Pos</td><td>{@pos}</td></tr>
+<tr><td class="hdg">DOB / i9s Career</td><td>[if dob]{@dob}[else]{@yob}[/if] / {@yrdebut} - {@yrfinal}</td></tr>
+<tr><td class="hdg">Birthplace</td><td>[if birth_city]{@birth_city}, [/if][if birth_state]{@birth_state} [/if]({@birth_nation})</td></tr>
+<tr><td class="hdg">Height / Weight</td><td>{@height} / {@weight}</td></tr>
+<tr><td class="hdg">B / T</td><td>{@b} / {@t}</td></tr>
+[after]</table>[/after]

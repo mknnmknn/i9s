@@ -1,0 +1,6 @@
+<!-- 260209 -->
+[before]<table><tr><td class="hdg">Year</td><td class="hdg">G</td><td class="hdg">GS</td><td class="hdg">IP</td><td class="hdg">HA</td><td class="hdg">W</td><td class="hdg">K</td><td class="hdg">HRA</td><td class="hdg">eD</td><td class="hdg">eT</td><td class="hdg">eHBP</td><td class="hdg">BB/9</td><td class="hdg">H/9</td><td class="hdg">K/9</td><td class="hdg">ERA</td><td class="hdg">WHIP</td></tr>[/before]
+[if g]
+<tr><td class="hdg">{@yr}</td><td>{@g}</td><td>{@gs}</td><td>{@ip}</td><td>{@ha}</td><td>{@w}</td><td>{@k}</td><td>{@hra}</td><td>{@ed}</td><td>{@et}</td><td>{@ehbp}</td><td>{@bb_9}</td><td>{@h_9}</td><td>{@k_9}</td><td>{@era}</td><td>{@whip}</td></tr>
+[/if]
+[after]</table>[/after]
